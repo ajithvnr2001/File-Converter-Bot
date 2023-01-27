@@ -12,7 +12,6 @@ import time
 import random
 
 from buttons import *
-import aifunctions
 import helperfunctions
 import mediainfo
 import guess
