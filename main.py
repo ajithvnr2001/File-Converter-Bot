@@ -6,10 +6,9 @@ from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
 
 import os
 import shutil
+import subprocess
 import threading
-# import pickle
 import time
-import random
 
 from buttons import *
 import helperfunctions
@@ -29,7 +28,6 @@ api_id = os.environ.get("ID", "24069737")
 
 # bot
 app = Client("my_bot",api_id=api_id, api_hash=api_hash,bot_token=bot_token)
-os.system("chmod 777 c41lab.py negfix8 tgsconverter")
 MESGS = {}
 
 
@@ -164,7 +162,8 @@ def follow(message,inputt,new,old,oldmessage):
         print("It is LibreOffice option")
         file = app.download_media(message)
         cmd = helperfunctions.libreofficecommand(file,new)
-        os.system(cmd)
+        # os.system(cmd)
+        subprocess.run([cmd],env={"HOME": "."},)
         os.remove(file)
 
         if os.path.exists(output) and os.path.getsize(output) > 0:
@@ -344,13 +343,17 @@ def colorizeimage(message,oldmessage):
     file = app.download_media(message)
     output = file.split("/")[-1]
 
-    aifunctions.deoldify(file,output)
-    app.send_document(message.chat.id,document=output, force_document=True,caption="used tool -> **Deoldify**", reply_to_message_id=message.id)
-    os.remove(output)
+    try:
+        aifunctions.deoldify(file,output)
+        app.send_document(message.chat.id,document=output, force_document=True,caption="used tool -> **Deoldify**", reply_to_message_id=message.id)
+        os.remove(output)
+    except: pass
 
-    aifunctions.colorize_image(output,file)
-    app.send_document(message.chat.id,document=output, force_document=True,caption="used tool -> **Local Model**", reply_to_message_id=message.id)
-    os.remove(output)
+    try:
+        aifunctions.colorize_image(output,file)
+        app.send_document(message.chat.id,document=output, force_document=True,caption="used tool -> **Local Model**", reply_to_message_id=message.id)
+        os.remove(output)
+    except: pass
 
     os.remove(file)
     app.delete_messages(message.chat.id,message_ids=oldmessage.id)
@@ -665,11 +668,12 @@ def transcript(message,oldmessage):
     os.remove(temp)
 
     data = aifunctions.whisper(file)
-    with open(temp,"w") as wfile:
-        wfile.write(data)
-    if os.path.getsize(temp) > 0:
-        app.send_document(message.chat.id, document=temp,caption="**OpenAI Engine** __(whisper)__", reply_to_message_id=message.id)
-    os.remove(temp)
+    if data is not None:
+        with open(temp,"w") as wfile:
+            wfile.write(data)
+        if os.path.getsize(temp) > 0:
+            app.send_document(message.chat.id, document=temp,caption="**OpenAI Engine** __(whisper)__", reply_to_message_id=message.id)
+        os.remove(temp)
 
     app.delete_messages(message.chat.id,message_ids=oldmessage.id)
     os.remove(file)
@@ -751,7 +755,7 @@ def handleAIChat(message):
 # bloom
 def handelbloom(para,message,msg):
     ans = aifunctions.bloom(para)
-    app.send_message(message.chat.id, f'__{ans}__', reply_to_message_id=message.id)
+    if ans is not None: app.send_message(message.chat.id, f'__{ans}__', reply_to_message_id=message.id)
     app.delete_messages(message.chat.id, message_ids=msg.id)
 
 
@@ -1084,7 +1088,7 @@ def bloomcmd(client: pyrogram.client.Client, message: pyrogram.types.messages_an
     except:
         try: para = message.text.split("/bloom ")[1]
         except:
-            app.send_message(message.chat.id,'__Send Para with Command or Reply to it,\nUsage :__ **/bloom A poem about the beauty of science by Alfred Edgar Brittle\nTitle: The Magic Craft\nIn the old times**', reply_to_message_id=message.id)
+            app.send_message(message.chat.id,'__Send Para with Command or Reply to it\n\nUsage :__ **/bloom A poem about the beauty of science**', reply_to_message_id=message.id)
             return	
     
     msg = message.reply_text("__Blooming...__", reply_to_message_id=message.id)
@@ -1404,7 +1408,8 @@ def text(client: pyrogram.client.Client, message: pyrogram.types.messages_and_me
             print("File is a Photo")
 
         else:
-            app.send_message(message.chat.id, '__Not is any Supported Format, Contact the Developer__', reply_to_message_id=nmessage.id, reply_markup=ReplyKeyboardRemove())
+            if str(message.from_user.id) == str(message.chat.id):
+                app.send_message(message.chat.id, '__Not in any Supported Format, Contact the Developer__', reply_to_message_id=nmessage.id, reply_markup=ReplyKeyboardRemove())
             return
 
         newext = message.text.lower()
@@ -1419,15 +1424,13 @@ def text(client: pyrogram.client.Client, message: pyrogram.types.messages_and_me
             conv.start()
 
     else:
-        saveMsg(message, "TEXT")
         if str(message.from_user.id) == str(message.chat.id):
             if len(message.text.split("\n")) == 1:
-                removeSavedMsg(message)
                 ots = threading.Thread(target=lambda: other(message), daemon=True)
                 ots.start()
-            else:    
+            else: 
+                saveMsg(message, "TEXT")  
                 app.send_message(message.chat.id, '__for Text messages, You can use **/make** to Create a File from it.\n(first line of text will be trancated and used as filename)__', reply_to_message_id=message.id)
-            
 
 #apprun
 print("Bot Started")
