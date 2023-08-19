@@ -23,6 +23,18 @@ git clone https://github.com/bipinkrish/File-Converter-Bot.git
 cd File-Converter-Bot
 docker build . -t File-Converter
 docker run File-Converter
+
+or
+!sudo apt-get -y update
+!sudo apt-get install -y zbar-tools
+!sudo apt-get install -y libzbar-dev
+!sudo apt-cache search zbar
+!pip install pyrogram 
+!sudo apt-get install -y libzbar0
+!sudo apt-get install -y libzbar0 libzbar-dev
+git clone https://github.com/ajithvnr2001/File-Converter-Bot
+cd File-Converter-Bot
+python3 main.py
 ```
 
 ---
