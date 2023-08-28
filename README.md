@@ -32,6 +32,10 @@ or
 !pip install pyrogram 
 !sudo apt-get install -y libzbar0
 !sudo apt-get install -y libzbar0 libzbar-dev
+!pip install asteval
+!pip install pyzbar
+!pip install telegraph
+!pip install pykeyboard
 git clone https://github.com/ajithvnr2001/File-Converter-Bot
 cd File-Converter-Bot
 python3 main.py
