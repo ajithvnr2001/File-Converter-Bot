@@ -19,7 +19,7 @@ You have to install Docker or Docker Compose.
 Set the Environment Variables after the clone, or you can directly change it on [Line 26 - 28 in main.py](https://github.com/bipinkrish/File-Converter-Bot/blob/main/main.py?plain=1#L26) file
 
 ```
-git clone https://github.com/bipinkrish/File-Converter-Bot.git
+git clone https://github.com/ajithvnr2001/File-Converter-Bot.git
 cd File-Converter-Bot
 docker build . -t File-Converter
 docker run File-Converter
